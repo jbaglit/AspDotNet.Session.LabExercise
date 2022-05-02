@@ -1,0 +1,57 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Toys.Web.Extensions
+@using Toys.Data.Models
+
+@{
+    ViewBag.Title = "My Cart";
+
+    List<ShoppingCart> myCart = Context.Session.GetObject<List<ShoppingCart>>("cart");
+    var total = myCart.Sum(item => @item.CToy.MToyRate * @item.SiQty).ToString("C2");
+}
+
+<h1 style="text-align:center">My Cart</h1>
+
+@if (myCart.Count() > 0)
+{
+    <table style="text-align:center" class="table table-striped">
+        <thead>
+            <tr>
+                <td>Toy Id</td>
+                <td>Toy Name</td>
+                <td>Toy Description</td>
+                <td>Price</td>
+                <td>Quantity</td>
+                <td>Total Price</td>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (ShoppingCart product in @Context.Session.GetObject<List<ShoppingCart>>("cart"))
+        {
+            <tr class="tableBody">
+                <td>@product.CToy.CToyId</td>
+                <td>@product.CToy.VToyName</td>
+                <td>@product.CToy.VToyDescription</td>
+                <td>@product.CToy.MToyRate.ToString("C2")</td>
+                <td>@product.SiQty</td>
+                <td>@(@product.CToy.MToyRate * @product.SiQty)</td>
+                <td><a href="@Url.Action("Remove", "MyCart", new { Id = product.CToy.CToyId })">Delete</a></td>
+            </tr>
+        }
+
+        <tr>
+            <h3 style="text-align:right">Grand Total: </h3>
+            <h4 style="text-align:right">@total</h4>
+        </tr>
+</table>
+    <button style="justify-content:center">
+        <a href="@Url.Action("Index", "Toy")">See Product List</a>
+    </button>
+
+}
+else
+{
+    <h2 style="text-align:center">NO RECORDS FOUND</h2>
+    <button style="justify-content:flex-end">
+        <a href="@Url.Action("Index", "Toy")">See Product List</a>
+    </button>
+}
